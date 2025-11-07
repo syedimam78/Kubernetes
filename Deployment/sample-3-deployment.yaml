@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-3
+  labels:
+    app: sample-3
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sample-3
+  template:
+    metadata:
+      labels:
+        app: sample-3
+    spec:
+      containers:
+        - name: sample-3
+          image: devopsprosamples/next-sample-1
+          ports:
+            - containerPort: 3000
