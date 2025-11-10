@@ -6,8 +6,8 @@ Since we are using MiniKube here, we do not have any cloud env or public access 
 2- Updating host file manually with FQDN
 
 1- Port forward Tunnel (run following command)
+================================================
 minikube service ingress-nginx-controller -n ingress-nginx --url
-
 
 You got:
 
@@ -51,6 +51,12 @@ Purpose	Use this
 Access your HTTP-based app (no TLS)	http://127.0.0.1:51296 (or http://devopsdummies.com:51296)
 Access your HTTPS-based app (with TLS enabled later)	https://127.0.0.1:51297 (or https://devopsdummies.com:51297)
 
+2- Updating /etc/hosts file with FQDN for DNS
+=============================================
+
+cat /etc/hosts                        
+
+127.0.0.1    devopsdummies.com sample-1.devopsdummies.com sample-2.devopsdummies.com
 
 ============================
 URLS as part of INGRESS LAB:
