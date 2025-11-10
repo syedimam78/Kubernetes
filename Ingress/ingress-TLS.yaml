@@ -1,0 +1,88 @@
+# -------------------------------
+# 1️⃣  Self-signed Issuer
+# -------------------------------
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+  namespace: default
+spec:
+  selfSigned: {}
+
+---
+# -------------------------------
+# 2️⃣  Certificate (Self-signed)
+# -------------------------------
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-secret
+  namespace: default
+spec:
+  secretName: tls-secret
+  issuerRef:
+    name: selfsigned-issuer
+    kind: Issuer
+  dnsNames:
+    - devopsdummies.com
+    - sample-1.devopsdummies.com
+    - sample-2.devopsdummies.com
+
+---
+# -------------------------------
+# 3️⃣  Ingress using that cert
+# -------------------------------
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  tls:
+  - hosts:
+      - devopsdummies.com
+      - sample-1.devopsdummies.com
+      - sample-2.devopsdummies.com
+    secretName: tls-secret
+
+  rules:
+  - host: devopsdummies.com
+    http:
+      paths:
+      - path: /sample-1
+        pathType: Prefix
+        backend:
+          service:
+            name: sample-1
+            port:
+              number: 3000
+      - path: /sample-2
+        pathType: Prefix
+        backend:
+          service:
+            name: sample-2
+            port:
+              number: 3000
+
+  - host: sample-1.devopsdummies.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sample-1
+            port:
+              number: 3000
+
+  - host: sample-2.devopsdummies.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sample-2
+            port:
+              number: 3000
