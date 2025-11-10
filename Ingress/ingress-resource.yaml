@@ -2,44 +2,55 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
+  namespace:  default
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false" 
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false" 
+   
 spec:
- ingressClassName: nginx  
- rules:
-  - host: "devopsdummies.com"
+  ingressClassName: nginx
+  tls:
+  - hosts:
+      - devopsdummies.com
+      - sample-1.devopsdummies.com
+      - sample-2.devopsdummies.com
+    secretName: tls-secret
+
+  rules:
+  - host: devopsdummies.com
     http:
       paths:
-      - pathType: Prefix
-        path: /sample-1
+      - path: /sample-1
+        pathType: Prefix
         backend:
           service:
             name: sample-1
             port:
               number: 3000
-  - host: "devopsdummies.com"
-    http:
-      paths:
-      - pathType: Prefix
-        path: /sample-2
+      - path: /sample-2
+        pathType: Prefix
         backend:
           service:
             name: sample-2
             port:
               number: 3000
-  - host: "sample-1.devopsdummies.com"
+
+  - host: sample-1.devopsdummies.com
     http:
       paths:
-      - pathType: Prefix
-        path: "/"
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: sample-3
             port:
               number: 3000
-  - host: "sample-2.devopsdummies.com"
+
+  - host: sample-2.devopsdummies.com
     http:
       paths:
-      - pathType: Prefix
-        path: "/"
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: sample-4
