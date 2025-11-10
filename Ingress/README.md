@@ -1,6 +1,7 @@
 This folder is for ingress only. It has further folders of deployments and services. 
 
-The requirement of customer is as follows.
+The requirement of customer is as follows
+=========================================
 
 Customer needs to deploy two microservices sample-1 and sample-2 with 3 replicas.
 Both applications needs to be exposed to internet and to be accessed by using path based routing.
@@ -9,8 +10,6 @@ devopsdummies.com/sample-2
 Customer also requires two more microservices sample-3 and sample-4 with three replicas. 
 These microservices to be accesssed by usinbg subdomain as follows
 sample-3.devopsdummies.com, sample-4.devopsdummies.com
-
-
 
 
 
