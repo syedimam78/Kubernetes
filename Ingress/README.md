@@ -1,1 +1,78 @@
+# Kubernetes Ingress MiniKube 
+
+Since we are using MiniKube here, we do not have any cloud env or public access at present. Two steps to be taken to make it work
+
+1- Port forward Tunnel
+2- Updating host file manually with FQDN
+
+1- Port forward Tunnel (run following command)
+================================================
+minikube service ingress-nginx-controller -n ingress-nginx --url
+
+You got:
+
+http://127.0.0.1:51296  > This would differ in your case and port may change 
+http://127.0.0.1:51297 > This would differ in your case and port may change
+
+So two ports were opened on your Mac:
+
+51296 → for HTTP (port 80)
+
+51297 → for HTTPS (port 443)
+
+🧠 Why this happens
+
+Inside the cluster, your NGINX ingress service exposes:
+
+kubectl get svc -n ingress-nginx
+
+shows something like:
+
+PORT(S): 80:30549/TCP, 443:32752/TCP
+
+
+This means:
+
+Port 80 is mapped internally for HTTP
+
+Port 443 is mapped internally for HTTPS
+
+But since you’re using Minikube with the Docker driver, those ports (30549, 32752) aren’t directly reachable from your host.
+When you run minikube service ... --url, Minikube starts a temporary port-forward tunnel to your host and maps them to random available ports on your Mac (in your case, 51296 and 51297).
+
+So effectively:
+
+Inside Cluster	Minikube Tunnel on Mac
+Port 80 (HTTP)	127.0.0.1:51296
+Port 443 (HTTPS)	127.0.0.1:51297
+
+When to use each
+Purpose	Use this
+Access your HTTP-based app (no TLS)	http://127.0.0.1:51296 (or http://devopsdummies.com:51296)
+Access your HTTPS-based app (with TLS enabled later)	https://127.0.0.1:51297 (or https://devopsdummies.com:51297)
+
+2- Updating /etc/hosts file with FQDN for DNS
+=============================================
+
+cat /etc/hosts                        
+
+127.0.0.1    devopsdummies.com sample-1.devopsdummies.com sample-2.devopsdummies.com
+
+============================
+URLS as part of INGRESS LAB:
+Non-Secure
+==========
+http://devopsdummies.com:51296/sample-1 > sample-1 dep/svc
+http://devopsdummies.com:51296/sample-2 > sample-2 dep/svc
+http://sample-1.devopsdummies.com:51296 > sample-3 dep/svc
+http://sample-2.devopsdummies.com:51296 > sample-4 dep/svc
+
+Secure
+======
+https://devopsdummies.com:51297/sample-1 > sample-1 dep/svc
+https://devopsdummies.com:51297/sample-2 > sample-2 dep/svc
+https://sample-1.devopsdummies.com:51297 > sample-3 dep/svc
+https://sample-2.devopsdummies.com:51297 > sample-4 dep/svc
+
+
 
