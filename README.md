@@ -70,3 +70,21 @@ Port	Protocol	Description
 51296	HTTP	Mapped from internal port 80 (your main app URL)
 51297	HTTPS	Mapped from internal port 443 (for SSL, not used yet)
 
+============================
+URLS as part of INGRESS LAB:
+Non-Secure
+==========
+http://devopsdummies.com/sample-1 > sample-1 dep/svc
+http://devopsdummies.com/sample-2 > sample-2 dep/svc
+http://sample-1.devopsdummies.com > sample-3 dep/svc
+http://sample-2.devopsdummies.com > sample-4 dep/svc
+
+Secure
+======
+https://devopsdummies.com/sample-1 > sample-1 dep/svc
+https://devopsdummies.com/sample-2 > sample-2 dep/svc
+https://sample-1.devopsdummies.com > sample-3 dep/svc
+https://sample-2.devopsdummies.com > sample-4 dep/svc
+
+
+
