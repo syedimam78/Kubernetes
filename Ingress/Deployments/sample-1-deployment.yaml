@@ -18,4 +18,4 @@ spec:
         - name: sample-1
           image: devopsprosamples/next-path-sample-1
           ports:
-            - containerPort: 80
+            - containerPort: 3000
