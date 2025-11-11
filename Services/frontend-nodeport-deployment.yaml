@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: nginx:alpine
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - |
+              echo '<h2>This is Frontend</h2><p>Calling Backend:</p><iframe src="http://backend-clusterip:8080" width="300" height="100"></iframe>' > /usr/share/nginx/html/index.html;
+              nginx -g 'daemon off;'
+          ports:
+            - containerPort: 80
