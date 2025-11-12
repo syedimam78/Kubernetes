@@ -90,4 +90,76 @@ https://sample-3.devopsdummies.com:51297 > sample-3 dep/svc
 https://sample-4.devopsdummies.com:51297 > sample-4 dep/svc
 
 
+==========
+===========================================
+Enable NGINX Ingress Controller in Minikube
+===========================================
+Minikube already includes NGINX ingress as an addon — just enable it:
+
+minikube addons enable ingress
+
+kubectl get pods -n ingress-nginx
+
+ingress-nginx-controller-xxxx   Running
+
+STEP 2 — Install cert-manager (official way)
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.0/cert-manager.yaml
+
+
+Wait until all pods are ready:
+
+kubectl get pods -n cert-manager
+
+
+✅ Expect:
+
+cert-manager
+cert-manager-cainjector
+cert-manager-webhook
+
+
+all in Running state.
+
+STEP 3 — Create a Self-Signed Issuer & Certificate
+
+Save the following as self-signed-cert.yaml:
+
+# ClusterIssuer for self-signed certificates
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+
+---
+# Certificate resource to generate TLS secret
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: myapp-cert
+  namespace: default
+spec:
+  secretName: myapp-tls
+  dnsNames:
+    - devopsdummies.com
+    - sample3.devopsdummies.com
+    - sample4.devopsdummies.com
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+
+
+Apply it:
+
+kubectl apply -f self-signed-cert.yaml
+
+
+Wait and check:
+
+kubectl get certificate
+kubectl describe certificate myapp-cert
+kubectl get secret myapp-tls
+
+
 
