@@ -90,10 +90,8 @@ https://sample-3.devopsdummies.com:51297 > sample-3 dep/svc
 https://sample-4.devopsdummies.com:51297 > sample-4 dep/svc
 
 
-==========
-===========================================
 Enable NGINX Ingress Controller in Minikube
-===========================================
+-------------------------------------------
 Minikube already includes NGINX ingress as an addon — just enable it:
 
 minikube addons enable ingress
@@ -101,6 +99,9 @@ minikube addons enable ingress
 kubectl get pods -n ingress-nginx
 
 ingress-nginx-controller-xxxx   Running
+
+Installing Cert Manager
+----------------------
 
 STEP 2 — Install cert-manager (official way)
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.0/cert-manager.yaml
@@ -119,44 +120,5 @@ cert-manager-webhook
 
 
 all in Running state.
-
-
-STEP 3 — Create a Self-Signed Issuer & Certificate
-
-Save the following as self-signed-cert.yaml:
-
-
-# -------------------------------
-# 1️⃣  Self-signed Issuer
-# -------------------------------
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: selfsigned-issuer
-  namespace: default
-spec:
-  selfSigned: {}
-
----
-# -------------------------------
-# 2️⃣  Certificate (Self-signed)
-# -------------------------------
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: tls-secret
-  namespace: default
-spec:
-  secretName: tls-secret
-  issuerRef:
-    name: selfsigned-issuer
-    kind: Issuer
-  dnsNames:
-    - devopsdummies.com
-    - sample-3.devopsdummies.com
-    - sample-4.devopsdummies.com
-
----
-
 
 
