@@ -78,20 +78,27 @@ URLS as part of INGRESS LAB:
 Non-Secure
 ==========
 http://devopsdummies.com:51296/sample-1 > sample-1 dep/svc
+
 http://devopsdummies.com:51296/sample-2 > sample-2 dep/svc
+
 http://sample-3.devopsdummies.com:51296 > sample-3 dep/svc
+
 http://sample-4.devopsdummies.com:51296 > sample-4 dep/svc
 
 Secure
 ======
 https://devopsdummies.com:51297/sample-1 > sample-1 dep/svc
+
 https://devopsdummies.com:51297/sample-2 > sample-2 dep/svc
+
 https://sample-3.devopsdummies.com:51297 > sample-3 dep/svc
+
 https://sample-4.devopsdummies.com:51297 > sample-4 dep/svc
 
 
 Enable NGINX Ingress Controller in Minikube
 -------------------------------------------
+
 Minikube already includes NGINX ingress as an addon — just enable it:
 
 minikube addons enable ingress
@@ -118,7 +125,12 @@ cert-manager
 cert-manager-cainjector
 cert-manager-webhook
 
-
 all in Running state.
+
+kubectl apply -f Selfsigned-cert.yaml
+
+kubectl get certificate
+kubectl describe certificate devopsdummies-cert
+kubectl get secret devopsdummies-tls
 
 
