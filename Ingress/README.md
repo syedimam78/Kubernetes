@@ -120,46 +120,43 @@ cert-manager-webhook
 
 all in Running state.
 
+
 STEP 3 — Create a Self-Signed Issuer & Certificate
 
 Save the following as self-signed-cert.yaml:
 
-# ClusterIssuer for self-signed certificates
+
+# -------------------------------
+# 1️⃣  Self-signed Issuer
+# -------------------------------
 apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
+kind: Issuer
 metadata:
   name: selfsigned-issuer
+  namespace: default
 spec:
   selfSigned: {}
 
 ---
-# Certificate resource to generate TLS secret
+# -------------------------------
+# 2️⃣  Certificate (Self-signed)
+# -------------------------------
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: myapp-cert
+  name: tls-secret
   namespace: default
 spec:
-  secretName: myapp-tls
-  dnsNames:
-    - devopsdummies.com
-    - sample3.devopsdummies.com
-    - sample4.devopsdummies.com
+  secretName: tls-secret
   issuerRef:
     name: selfsigned-issuer
-    kind: ClusterIssuer
+    kind: Issuer
+  dnsNames:
+    - devopsdummies.com
+    - sample-3.devopsdummies.com
+    - sample-4.devopsdummies.com
 
-
-Apply it:
-
-kubectl apply -f self-signed-cert.yaml
-
-
-Wait and check:
-
-kubectl get certificate
-kubectl describe certificate myapp-cert
-kubectl get secret myapp-tls
+---
 
 
 
