@@ -130,7 +130,7 @@ all in Running state.
 kubectl apply -f Selfsigned-cert.yaml
 
 kubectl get certificate
-kubectl describe certificate devopsdummies-cert
-kubectl get secret devopsdummies-tls
+kubectl describe certificate tls-secret
+kubectl get secret tls-secret
 
 
