@@ -12,8 +12,8 @@ spec:
   tls:
   - hosts:
       - devopsdummies.com
-      - sample-1.devopsdummies.com
-      - sample-2.devopsdummies.com
+      - sample-3.devopsdummies.com
+      - sample-4.devopsdummies.com
     secretName: tls-secret
 
   rules:
@@ -26,14 +26,14 @@ spec:
           service:
             name: sample-1
             port:
-              number: 3000
+              number: 80
       - path: /sample-2
         pathType: Prefix
         backend:
           service:
             name: sample-2
             port:
-              number: 3000
+              number: 80
 
   - host: sample-1.devopsdummies.com
     http:
@@ -44,7 +44,7 @@ spec:
           service:
             name: sample-3
             port:
-              number: 3000
+              number: 80
 
   - host: sample-2.devopsdummies.com
     http:
@@ -55,4 +55,4 @@ spec:
           service:
             name: sample-4
             port:
-              number: 3000
+              number: 80
