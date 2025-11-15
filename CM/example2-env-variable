@@ -1,0 +1,124 @@
+
+# ---------------------------------------------------------
+# CONFIGMAP (Environment Variables)
+# ---------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sample1-env-config
+data:
+  APP_MODE: "production"
+  APP_MESSAGE: "Welcome from ConfigMap Lab 1!"
+  APP_VERSION: "v1.0"
+
+---
+# ---------------------------------------------------------
+# DEPLOYMENT (Reads vars from ConfigMap)
+# ---------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-1-env-demo
+  labels:
+    app: sample-1-env-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sample-1-env-demo
+  template:
+    metadata:
+      labels:
+        app: sample-1-env-demo
+    spec:
+      containers:
+        - name: sample-1-env-demo
+          image: devopsprosamples/next-path-sample-1
+          ports:
+            - containerPort: 3000
+          env:
+            - name: APP_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: sample1-env-config
+                  key: APP_MODE
+
+            - name: APP_MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: sample1-env-config
+                  key: APP_MESSAGE
+
+            - name: APP_VERSION
+              valueFrom:
+                configMapKeyRef:
+                  name: sample1-env-config
+                  key: APP_VERSION
+
+---
+# ---------------------------------------------------------
+# SERVICE
+# ---------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-1-env-svc
+spec:
+  selector:
+    app: sample-1-env-demo
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
+
+
+
+🧪 TESTING LAB  — Step-by-Step
+✔ 1. Apply the YAML
+kubectl apply -f configmap-env.yaml
+
+✔ 2. Check resources
+kubectl get configmap
+kubectl get deploy
+kubectl get pods
+kubectl get svc
+
+
+You should see:
+
+sample1-env-config
+
+sample-1-env-demo
+
+sample-1-env-svc
+
+✔ 3. Inspect ConfigMap
+kubectl describe configmap sample1-env-config
+
+✔ 4. Check Pod environment variables
+
+Pick a pod:
+
+kubectl get pods -l app=sample-1-env-demo
+kubectl exec <POD_NAME> -- printenv | grep APP
+
+APP_MODE=production
+APP_MESSAGE=Welcome from ConfigMap Lab 1!
+APP_VERSION=v1.0
+
+Step 6 — Test service from inside cluster
+
+Start a test pod:
+
+kubectl run test --rm -it --image=busybox -- sh
+
+
+Inside the busybox shell:
+
+wget -qO- http://sample-1-env-svc/sample-1
+exit
+✔ Service works
+✔ Pods work
+✔ Port mapping works
+✔ ConfigMap lab is fully successful
