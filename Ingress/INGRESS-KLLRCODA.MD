@@ -16,6 +16,16 @@ Students will:
 4. Observe routing behavior for path- and host-based rules
 
 ---
+NB:
+Use same deployment, services, ingress and selfsigned-cert files as for minikube
+
+Pre-req
+1- Ingress installation for KLLRCODA is different than minikube mention in step 2
+2- 
+
+
+
+
 
 ## 🧩 Step 1 — Verify Cluster Access
 
@@ -53,48 +63,17 @@ ingress-nginx-controller   1/1   Running
 
 ---
 
-## 🧩 Step 3 — Deploy Four Sample Apps
+## 🧩 Step 3 — Deploy Four Sample Apps (deployment and services)
 
-```bash
-cat <<'EOF' > samples.yaml
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: sample-1
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: sample-1
-  template:
-    metadata:
-      labels:
-        app: sample-1
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:alpine
-        ports:
-        - containerPort: 3000
-        command: ["/bin/sh","-c"]
-        args: ["sed -i 's/80/3000/' /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: sample-1
-spec:
-  selector:
-    app: sample-1
-  ports:
-  - port: 80
-    targetPort: 3000
----
-# Repeat for sample-2,3,4 (reuse same image)
-EOF
+kubectl apply -f sample-1-deployment.yaml
+kubectl apply -f sample-2-deployment.yaml
+kubectl apply -f sample-3.deployment.yaml
+kubectl apply -f sample-4.deployment.yaml
 
-kubectl apply -f samples.yaml
+kubectl apply -f sample-1-services.yaml
+kubectl apply -f sample-2-services.yaml
+kubectl apply -f sample-3-services.yaml
+kubectl apply -f sample-4-services.yaml
 ```
 
 ### 🔹 Show / Verify
@@ -128,75 +107,15 @@ kubectl get secret tls-secret
 
 ## 🧩 Step 5 — Create the Ingress Resource
 
-*(HTTP + HTTPS + path-based + host-based)*
-
-```bash
-cat <<'EOF' > ingress-resource.yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: example-ingress
-  namespace: default
-  annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
-spec:
-  ingressClassName: nginx
-  tls:
-  - hosts:
-      - devopsdummies.com
-      - sample-3.devopsdummies.com
-      - sample-4.devopsdummies.com
-    secretName: tls-secret
-  rules:
-  - host: devopsdummies.com
-    http:
-      paths:
-      - path: /sample-1
-        pathType: Prefix
-        backend:
-          service:
-            name: sample-1
-            port:
-              number: 3000
-      - path: /sample-2
-        pathType: Prefix
-        backend:
-          service:
-            name: sample-2
-            port:
-              number: 3000
-  - host: sample-3.devopsdummies.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: sample-3
-            port:
-              number: 3000
-  - host: sample-4.devopsdummies.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: sample-4
-            port:
-              number: 3000
-EOF
 
 kubectl apply -f ingress-resource.yaml
 ```
 
 ### 🔹 Show / Verify
 
-```bash
 kubectl get ingress
 kubectl describe ingress example-ingress
-```
+
 
 ✅ *Expected:* lists all 4 rules and the `tls-secret`.
 
@@ -221,14 +140,14 @@ Example output:
 ## 🧩 Step 7 — Test HTTP Routing
 
 ### 🔹 Path-based
-
+NB: Your port may be different so change following commands port as per output to your terminal
 ```bash
 curl -v -H "Host: devopsdummies.com" http://localhost:32225/sample-1
 curl -v -H "Host: devopsdummies.com" http://localhost:32225/sample-2
 ```
 
 ### 🔹 Host-based
-
+NB: Your port may be different so change following commands port as per output to your terminal
 ```bash
 curl -v -H "Host: sample-3.devopsdummies.com" http://localhost:32225/
 curl -v -H "Host: sample-4.devopsdummies.com" http://localhost:32225/
@@ -241,7 +160,7 @@ curl -v -H "Host: sample-4.devopsdummies.com" http://localhost:32225/
 ## 🧩 Step 8 — Test HTTPS Routing (Self-Signed)
 
 ### 🔹 Path-based
-
+NB: Your port may be different so change following commands port as per output to your terminal
 ```bash
 curl -vk -H "Host: devopsdummies.com" https://localhost:31046/sample-1
 curl -vk -H "Host: devopsdummies.com" https://localhost:31046/sample-2
@@ -249,6 +168,7 @@ curl -vk -H "Host: devopsdummies.com" https://localhost:31046/sample-2
 
 ### 🔹 Host-based
 
+NB: Your port may be different so change following commands port as per output to your terminal
 ```bash
 curl -vk -H "Host: sample-3.devopsdummies.com" https://localhost:31046/
 curl -vk -H "Host: sample-4.devopsdummies.com" https://localhost:31046/
