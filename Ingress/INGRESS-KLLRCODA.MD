@@ -66,13 +66,19 @@ ingress-nginx-controller   1/1   Running
 ## 🧩 Step 3 — Deploy Four Sample Apps (deployment and services)
 
 kubectl apply -f sample-1-deployment.yaml
+
 kubectl apply -f sample-2-deployment.yaml
+
 kubectl apply -f sample-3.deployment.yaml
+
 kubectl apply -f sample-4.deployment.yaml
 
 kubectl apply -f sample-1-services.yaml
+
 kubectl apply -f sample-2-services.yaml
+
 kubectl apply -f sample-3-services.yaml
+
 kubectl apply -f sample-4-services.yaml
 ```
 
@@ -98,6 +104,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 
 ```bash
 kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key
+
 kubectl get secret tls-secret
 ```
 
@@ -114,6 +121,7 @@ kubectl apply -f ingress-resource.yaml
 ### 🔹 Show / Verify
 
 kubectl get ingress
+
 kubectl describe ingress example-ingress
 
 
@@ -143,6 +151,7 @@ Example output:
 NB: Your port may be different so change following commands port as per output to your terminal
 ```bash
 curl -v -H "Host: devopsdummies.com" http://localhost:32225/sample-1
+
 curl -v -H "Host: devopsdummies.com" http://localhost:32225/sample-2
 ```
 
@@ -150,6 +159,7 @@ curl -v -H "Host: devopsdummies.com" http://localhost:32225/sample-2
 NB: Your port may be different so change following commands port as per output to your terminal
 ```bash
 curl -v -H "Host: sample-3.devopsdummies.com" http://localhost:32225/
+
 curl -v -H "Host: sample-4.devopsdummies.com" http://localhost:32225/
 ```
 
@@ -163,6 +173,7 @@ curl -v -H "Host: sample-4.devopsdummies.com" http://localhost:32225/
 NB: Your port may be different so change following commands port as per output to your terminal
 ```bash
 curl -vk -H "Host: devopsdummies.com" https://localhost:31046/sample-1
+
 curl -vk -H "Host: devopsdummies.com" https://localhost:31046/sample-2
 ```
 
@@ -171,6 +182,7 @@ curl -vk -H "Host: devopsdummies.com" https://localhost:31046/sample-2
 NB: Your port may be different so change following commands port as per output to your terminal
 ```bash
 curl -vk -H "Host: sample-3.devopsdummies.com" https://localhost:31046/
+
 curl -vk -H "Host: sample-4.devopsdummies.com" https://localhost:31046/
 ```
 
@@ -188,6 +200,7 @@ echo | openssl s_client -connect localhost:31046 -servername devopsdummies.com |
 
 ```
 subject=CN = devopsdummies.com
+
 issuer=CN = devopsdummies.com
 ```
 
