@@ -1,0 +1,275 @@
+🧩 Scenario 1 – Literal Key–Value ConfigMap as Environment Variables
+Step 1️⃣ — Create ConfigMap
+kubectl create configmap env-config \
+  --from-literal=APP_ENV=production \
+  --from-literal=APP_DEBUG=false \
+  --from-literal=MESSAGE="Welcome from ConfigMap!"
+
+Step 2️⃣ — Verify ConfigMap
+kubectl get configmaps
+kubectl describe configmap env-config
+kubectl get configmap env-config -o yaml
+
+
+✅ Expected output:
+
+Name:         env-config
+Data
+====
+APP_ENV: production
+APP_DEBUG: false
+MESSAGE: Welcome from ConfigMap!
+
+Step 3️⃣ — Create Pod Using ConfigMap
+
+pod-env.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: env-demo
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["sleep", "3600"]
+      envFrom:
+        - configMapRef:
+            name: env-config
+
+
+Apply:
+
+kubectl apply -f pod-env.yaml
+
+Step 4️⃣ — Verify Pod and ConfigMap Link
+kubectl get pods
+kubectl describe pod env-demo
+
+
+✅ Check under Environment Variables from: → ConfigMap: env-config
+
+Step 5️⃣ — Test Inside Pod
+kubectl exec -it env-demo -- printenv | grep APP_
+kubectl exec -it env-demo -- printenv | grep MESSAGE
+
+
+✅ Expected:
+
+APP_ENV=production
+APP_DEBUG=false
+MESSAGE=Welcome from ConfigMap!
+
+🧩 Scenario 2 – File-Based ConfigMap Mounted as Volume
+Step 1️⃣ — Create File and ConfigMap
+echo -e "port=8080\nmax_connections=100" > app.properties
+kubectl create configmap file-config --from-file=app.properties
+
+
+Check:
+
+kubectl get configmaps
+kubectl describe configmap file-config
+
+
+✅ You’ll see:
+
+app.properties:
+----
+port=8080
+max_connections=100
+
+Step 2️⃣ — Create Pod Mounting ConfigMap
+
+pod-volume.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volume-demo
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["sleep", "3600"]
+      volumeMounts:
+        - name: config-vol
+          mountPath: /etc/config
+  volumes:
+    - name: config-vol
+      configMap:
+        name: file-config
+
+
+Apply:
+
+kubectl apply -f pod-volume.yaml
+
+Step 3️⃣ — Verify Pod and Mount
+kubectl get pods
+kubectl describe pod volume-demo
+
+
+Check for:
+
+Mounts:
+  /etc/config from config-vol (rw)
+Volumes:
+  config-vol:
+    Type: ConfigMap (a volume populated by a ConfigMap)
+    Name: file-config
+
+Step 4️⃣ — Inspect Inside Pod
+kubectl exec -it volume-demo -- ls /etc/config
+kubectl exec -it volume-demo -- cat /etc/config/app.properties
+
+
+✅ Expected:
+
+port=8080
+max_connections=100
+
+🧩 Scenario 3 – Combined (Env + Volume) Deployment
+
+This is how real apps use ConfigMaps in both ways.
+
+Step 1️⃣ — Create Combined YAML
+
+deploy-combined.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webapp-config
+data:
+  APP_MODE: "testing"
+  APP_COLOR: "blue"
+  settings.conf: |
+    [app]
+    theme=dark
+    retries=3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - name: busybox
+          image: busybox
+          command: ["sleep", "3600"]
+          envFrom:
+            - configMapRef:
+                name: webapp-config
+          volumeMounts:
+            - name: conf-vol
+              mountPath: /opt/config
+      volumes:
+        - name: conf-vol
+          configMap:
+            name: webapp-config
+
+
+Apply:
+
+kubectl apply -f deploy-combined.yaml
+
+Step 2️⃣ — Verify ConfigMap
+kubectl get configmaps
+kubectl describe configmap webapp-config
+
+
+✅ Expected keys:
+
+APP_MODE
+APP_COLOR
+settings.conf
+
+Step 3️⃣ — Verify Deployment and Pod
+kubectl get deploy,pods
+kubectl describe pod -l app=webapp
+
+
+Check for:
+
+Environment Variables from:
+  ConfigMap: webapp-config
+Volumes:
+  conf-vol:
+    Type: ConfigMap
+    Name: webapp-config
+
+Step 4️⃣ — Validate Inside Pod
+kubectl exec -it deploy/webapp -- printenv | grep APP_
+kubectl exec -it deploy/webapp -- ls /opt/config
+kubectl exec -it deploy/webapp -- cat /opt/config/settings.conf
+
+
+✅ Expected output:
+
+APP_MODE=testing
+APP_COLOR=blue
+[app]
+theme=dark
+retries=3
+
+🧩 Scenario 4 – Update ConfigMap and Redeploy
+Step 1️⃣ — Edit ConfigMap
+kubectl edit configmap webapp-config
+
+
+Change:
+
+APP_COLOR: "green"
+
+
+Save.
+
+Step 2️⃣ — Check Updated ConfigMap
+kubectl get configmap webapp-config -o yaml | grep APP_COLOR
+
+
+✅ Output:
+
+APP_COLOR: green
+
+Step 3️⃣ — Restart Deployment to Reload Changes
+kubectl rollout restart deployment webapp
+
+Step 4️⃣ — Validate Updated Value in Pod
+kubectl exec -it deploy/webapp -- printenv | grep APP_COLOR
+
+
+✅ Output:
+
+APP_COLOR=green
+
+🧪 Common Debug / Validation Commands (Full Reference)
+Purpose	Command	Example Output
+List ConfigMaps	kubectl get cm	Shows name, data count, age
+Get ConfigMap YAML	kubectl get cm <name> -o yaml	Full key–value data
+Describe ConfigMap	kubectl describe cm <name>	Shows all keys and values
+Edit ConfigMap	kubectl edit cm <name>	Opens editor to modify
+Delete ConfigMap	kubectl delete cm <name>	Deletes it
+List Pods	kubectl get pods	Shows running Pods
+Describe Pod	kubectl describe pod <pod>	Shows mounted ConfigMaps
+Show ConfigMap link	`kubectl describe pod <pod>	grep -A3 ConfigMap`
+Print env vars	`kubectl exec -it <pod> -- printenv	grep <key>`
+View mounted files	kubectl exec -it <pod> -- ls /etc/config	Confirms file mount
+Read mounted file	kubectl exec -it <pod> -- cat /etc/config/<file>	View config content
+Restart deployment	kubectl rollout restart deploy <name>	Reloads new configs
+✅ Final Summary
+Scenario	Use Case	ConfigMap Usage	Verification
+1️⃣	Literal key-value	Env vars	printenv
+2️⃣	File-based	Mounted volume	cat /etc/config/app.properties
+3️⃣	Combined (Deployment)	Env vars + file	printenv + cat /opt/config/settings.conf
+4️⃣	Update + restart	Rolling update	kubectl rollout restart
