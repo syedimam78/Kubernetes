@@ -1,0 +1,190 @@
+=================================
+LAB 2 — ConfigMap Mounted as File
+=================================
+📝 File: configmap-file.yaml
+🧱 Deployment: sample-1-file-demo
+🌐 Service: sample-1-file-svc
+📂 Mount Path: /config/settings.txt
+🐳 Image: devopsprosamples/next-path-sample-1
+🧠 Beginner Explanation (KillerCoda Friendly)
+
+In Kubernetes, a ConfigMap can be used not only for environment variables but also as a file mounted inside the container.
+
+This is used for:
+
+App configuration files
+
+JSON/YAML settings
+
+Feature flags
+
+Log configuration
+
+API endpoint lists
+
+Flow:
+
+ConfigMap → Volume → Mounted File → Pod → App reads file
+
+📄 configmap-file.yaml
+
+# ---------------------------------------------------------
+# CONFIGMAP (Mounted as File)
+# ---------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sample1-file-config
+data:
+  settings.txt: |
+    APP_NAME=SampleApp
+    APP_DESCRIPTION=This config file was mounted from a ConfigMap.
+    ENABLE_FEATURE_X=true
+    VERSION=2.0
+
+---
+# ---------------------------------------------------------
+# DEPLOYMENT (Mounts ConfigMap as a File)
+# ---------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-1-file-demo
+  labels:
+    app: sample-1-file-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sample-1-file-demo
+  template:
+    metadata:
+      labels:
+        app: sample-1-file-demo
+    spec:
+      containers:
+        - name: sample-1-file-demo
+          image: devopsprosamples/next-path-sample-1
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config/settings.txt
+              subPath: settings.txt
+      volumes:
+        - name: config-volume
+          configMap:
+            name: sample1-file-config
+
+---
+# ---------------------------------------------------------
+# SERVICE
+# ---------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-1-file-svc
+spec:
+  selector:
+    app: sample-1-file-demo
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
+
+🧪 TESTING LAB 2 — KillerCoda-Compatible Commands
+✔ Step 1 — Apply the YAML
+kubectl apply -f configmap-file.yaml
+
+✔ Step 2 — Verify resources
+kubectl get configmap
+kubectl get deploy
+kubectl get pods
+kubectl get svc
+
+
+Should show:
+
+sample1-file-config
+
+sample-1-file-demo
+
+sample-1-file-svc
+
+✔ Step 3 — Get a pod name
+kubectl get pods -l app=sample-1-file-demo
+
+
+Example:
+
+sample-1-file-demo-7c6c8d49c8-j7lmm
+sample-1-file-demo-7c6c8d49c8-cv2rt
+
+✔ Step 4 — Check mounted file
+
+🔥 Use KillerCoda-safe exec:
+
+kubectl exec sample-1-file-demo-85458b8c4f-9wcgn -- sh -c "cat /config/settings.txt"
+
+Expected output:
+
+APP_NAME=SampleApp
+APP_DESCRIPTION=This config file was mounted from a ConfigMap.
+ENABLE_FEATURE_X=true
+VERSION=2.0
+
+✔ Step 5 — Check permissions
+
+(Not required but useful for students)
+
+ kubectl exec sample-1-file-demo-85458b8c4f-bfvfd -- sh -c "ls -l /config"
+-rw-r--r--    1 root     root           116 Nov 15 01:31 settings.txt
+
+
+✔ Step 6 — Test service 
+kubectl run test --rm -it --image=busybox -- sh
+
+
+Inside busybox:
+
+wget -qO- http://sample-1-file-svc/sample-1
+exit
+
+(Your app responds only at /sample-1 — same as Lab 1)
+
+✔ Step 7 — View logs
+kubectl logs -l app=sample-1-file-demo --tail=50
+
+
+kubectl exec -it sample-1-file-demo-85458b8c4f-bfvfd -- /bin/sh
+You should now see:
+
+
+
+/ #
+ Check the folder /config
+sh
+
+ls -l /config
+Expected output:
+
+css
+
+-rw-r--r--    1 root     root           100 Jan  1 00:00 settings.txt
+If this appears → your ConfigMap file was mounted correctly.
+
+ — View the content of settings.txt
+
+cat /config/settings.txt
+
+
+🎉 LAB 2 Complete
+
+You now demonstrated:
+
+✔ ConfigMap as a file
+✔ Real-world file configurations
+✔ Volume + subPath usage
+✔ Correct KillerCoda commands
+✔ Proper file validation inside pod
