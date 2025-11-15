@@ -11,7 +11,58 @@ Customer also requires two more microservices sample-3 and sample-4 with three r
 These microservices to be accesssed by usinbg subdomain as follows
 sample-3.devopsdummies.com, sample-4.devopsdummies.com
 
+# Steps
 
+1- Install Minikube/kubctl if not done already
+2- Enable Ingress controller and verify
+3- Installing Cert Manager
+4- Installing Self Signed Certificate
+5- Updating /etc/hosts/file
+6- Perform 4 deployments, 4 services, ingress resource and self signed cert
+7- Port forward Tunnel
+8- test for http and https from browser 
+
+NB: Deployments, services, ingress, cert managers, ss certs all could have been verified and you can check commands from GPT or google
+
+Enable NGINX Ingress Controller in Minikube
+-------------------------------------------
+
+Minikube already includes NGINX ingress as an addon — just enable it:
+
+minikube addons enable ingress
+
+kubectl get pods -n ingress-nginx
+
+ingress-nginx-controller-xxxx   Running
+
+Installing Cert Manager
+----------------------
+
+STEP 2 — Install cert-manager (official way)
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.0/cert-manager.yaml
+
+
+Wait until all pods are ready:
+
+kubectl get pods -n cert-manager
+
+
+✅ Expect:
+
+cert-manager
+cert-manager-cainjector
+cert-manager-webhook
+
+all in Running state.
+
+Updating /etc/hosts file with FQDN for DNS
+=============================================
+
+cat /etc/hosts                        
+
+127.0.0.1    devopsdummies.com sample-1.devopsdummies.com sample-2.devopsdummies.com
+
+===========================
 
 # Kubernetes Ingress MiniKube 
 
@@ -20,7 +71,8 @@ Since we are using MiniKube here, we do not have any cloud env or public access 
 1- Port forward Tunnel
 2- Updating host file manually with FQDN
 
-1- Port forward Tunnel (run following command)
+
+Port forward Tunnel (run following command)
 ================================================
 minikube service ingress-nginx-controller -n ingress-nginx --url
 
@@ -66,14 +118,7 @@ Purpose	Use this
 Access your HTTP-based app (no TLS)	http://127.0.0.1:51296 (or http://devopsdummies.com:51296)
 Access your HTTPS-based app (with TLS enabled later)	https://127.0.0.1:51297 (or https://devopsdummies.com:51297)
 
-2- Updating /etc/hosts file with FQDN for DNS
-=============================================
-
-cat /etc/hosts                        
-
-127.0.0.1    devopsdummies.com sample-1.devopsdummies.com sample-2.devopsdummies.com
-
-============================
+=
 URLS as part of INGRESS LAB:
 Non-Secure
 ==========
@@ -96,36 +141,7 @@ https://sample-3.devopsdummies.com:51297 > sample-3 dep/svc
 https://sample-4.devopsdummies.com:51297 > sample-4 dep/svc
 
 
-Enable NGINX Ingress Controller in Minikube
--------------------------------------------
 
-Minikube already includes NGINX ingress as an addon — just enable it:
-
-minikube addons enable ingress
-
-kubectl get pods -n ingress-nginx
-
-ingress-nginx-controller-xxxx   Running
-
-Installing Cert Manager
-----------------------
-
-STEP 2 — Install cert-manager (official way)
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.0/cert-manager.yaml
-
-
-Wait until all pods are ready:
-
-kubectl get pods -n cert-manager
-
-
-✅ Expect:
-
-cert-manager
-cert-manager-cainjector
-cert-manager-webhook
-
-all in Running state.
 
 kubectl apply -f Selfsigned-cert.yaml
 
