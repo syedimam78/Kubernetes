@@ -55,6 +55,18 @@ cert-manager-webhook
 
 all in Running state.
 
+installing SS Certs as per yaml
+===============================
+
+kubectl apply -f Selfsigned-cert.yaml
+
+kubectl get certificate
+
+kubectl describe certificate tls-secret
+
+kubectl get secret tls-secret
+
+
 Updating /etc/hosts file with FQDN for DNS
 =============================================
 
@@ -143,10 +155,6 @@ https://sample-4.devopsdummies.com:51297 > sample-4 dep/svc
 
 
 
-kubectl apply -f Selfsigned-cert.yaml
 
-kubectl get certificate
-kubectl describe certificate tls-secret
-kubectl get secret tls-secret
 
 
