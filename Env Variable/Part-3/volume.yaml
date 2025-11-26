@@ -1,35 +1,35 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: downwardapi-volume
+  name: downwardapi-demo
   labels:
-    dapi: volume
-    cluster: test-cluster
+    app: down
+    env: test
   annotations:
-    color: red
+    owner: farooq
 spec:
   containers:
-    - name: client-container
-      image: registry.k8s.io/busybox
-      command: ["sh", "-c"]
-      args:
-      - while true; do
-          if [[ -e /etc/podinfo/labels ]]; then
-            echo -en '\n\n'; cat /etc/podinfo/labels; fi;
-          if [[ -e /etc/podinfo/annotations ]]; then
-            echo -en '\n\n'; cat /etc/podinfo/annotations; fi;
-          sleep 5;
-        done;
-      volumeMounts:
-        - name: podlevelinfo
-          mountPath: /etc/podlevelinfo
+  - name: demo
+    image: busybox
+    command: ["sh", "-c"]
+    args:
+    - |
+      echo "Starting..."; 
+      while true; do 
+        echo "---- LABELS ----"; cat /etc/podinfo/labels;
+        echo "---- ANNOTATIONS ----"; cat /etc/podinfo/annotations;
+        sleep 5;
+      done
+    volumeMounts:
+    - name: podinfo
+      mountPath: /etc/podinfo
   volumes:
-    - name: podlevelinfo
-      downwardAPI:
-        items:
-          - path: "labels"
-            fieldRef:
-              fieldPath: metadata.labels
-          - path: "annotations"
-            fieldRef:
-              fieldPath: metadata.annotations
+  - name: podinfo
+    downwardAPI:
+      items:
+      - path: "labels"
+        fieldRef:
+          fieldPath: metadata.labels
+      - path: "annotations"
+        fieldRef:
+          fieldPath: metadata.annotations
