@@ -213,6 +213,10 @@ kubectl exec -it deploy/webapp -- printenv | grep APP_
 kubectl exec -it deploy/webapp -- ls /opt/config
 kubectl exec -it deploy/webapp -- cat /opt/config/settings.conf
 
+kubectl exec -it <pod-name> -- sh
+
+cat /opt/config/APP_COLOR
+cat /opt/config/APP_MODE
 
 ✅ Expected output:
 
@@ -253,23 +257,4 @@ kubectl exec -it deploy/webapp -- printenv | grep APP_COLOR
 
 APP_COLOR=green
 
-🧪 Common Debug / Validation Commands (Full Reference)
-Purpose	Command	Example Output
-List ConfigMaps	kubectl get cm	Shows name, data count, age
-Get ConfigMap YAML	kubectl get cm <name> -o yaml	Full key–value data
-Describe ConfigMap	kubectl describe cm <name>	Shows all keys and values
-Edit ConfigMap	kubectl edit cm <name>	Opens editor to modify
-Delete ConfigMap	kubectl delete cm <name>	Deletes it
-List Pods	kubectl get pods	Shows running Pods
-Describe Pod	kubectl describe pod <pod>	Shows mounted ConfigMaps
-Show ConfigMap link	`kubectl describe pod <pod>	grep -A3 ConfigMap`
-Print env vars	`kubectl exec -it <pod> -- printenv	grep <key>`
-View mounted files	kubectl exec -it <pod> -- ls /etc/config	Confirms file mount
-Read mounted file	kubectl exec -it <pod> -- cat /etc/config/<file>	View config content
-Restart deployment	kubectl rollout restart deploy <name>	Reloads new configs
-✅ Final Summary
-Scenario	Use Case	ConfigMap Usage	Verification
-1️⃣	Literal key-value	Env vars	printenv
-2️⃣	File-based	Mounted volume	cat /etc/config/app.properties
-3️⃣	Combined (Deployment)	Env vars + file	printenv + cat /opt/config/settings.conf
-4️⃣	Update + restart	Rolling update	kubectl rollout restart
+
