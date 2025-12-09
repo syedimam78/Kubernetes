@@ -45,6 +45,12 @@ To go inside a running pod, use the following command:
 kubectl exec -it <pod-name> -- bash
 ```
 
+If you want to update the data file (data values) pods doesn't need to be restart. Update the data-file with any value and also update configmap as below
+kubectl create configmap configmap-3 \
+  --from-file=data-file \
+  --dry-run=client -o yaml | kubectl apply -f -
+
+
 ## Summary
 In this tutorial, you learned how to use ConfigMaps to manage configuration data in your Kubernetes cluster. ConfigMaps can be used to store configuration data as key-value pairs or as files. You can then use environment variables or volume mounts to make this data available to your applications running in Kubernetes.
 
