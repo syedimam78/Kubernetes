@@ -33,4 +33,40 @@ kubectl get pods -w
 ```
 
 # LAB 2 – Adding a Headless Service (Stable DNS per Pod)
+We have two yaml file here. First one for statefullset and second one for headless service.
+Create both yaml file in the repo by using vi editor
 
+```
+kubectl apply -f lab2-ss-with-headless.yaml
+kubectl get pods -w
+kubectl apply -f lab2-headless-svc.yaml
+kubectl get svc
+```
+CLUSTER-IP shows <none> → headless.
+This allows Kubernetes to give each pod its own DNS record.
+
+Use a Temporary Pod to Test DNS
+Run BusyBox:
+```
+kubectl run tmp-shell --rm -it --image=busybox:1.36 -- /bin/sh
+Inside the shell:
+```
+
+# 1) Show service DNS
+nslookup web-svc
+
+# 2) Show pod-level DNS
+nslookup web-0.web-svc
+nslookup web-1.web-svc
+nslookup web-2.web-svc
+
+# 3) Curl each pod
+```
+wget -qO- web-0.web-svc
+wget -qO- web-1.web-svc
+wget -qO- web-2.web-svc
+```
+Response should be like below
+<h1>Hello from web-0</h1>
+<h1>Hello from web-1</h1>
+<h1>Hello from web-2</h1>
