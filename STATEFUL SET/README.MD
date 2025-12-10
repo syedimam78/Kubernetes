@@ -67,6 +67,7 @@ wget -qO- web-1.web-svc
 wget -qO- web-2.web-svc
 ```
 Response should be like below
+
 <h1>Hello from web-0</h1>
 <h1>Hello from web-1</h1>
 <h1>Hello from web-2</h1>
