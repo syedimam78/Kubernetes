@@ -52,22 +52,37 @@ kubectl run tmp-shell --rm -it --image=busybox:1.36 -- /bin/sh
 Inside the shell:
 ```
 
-# 1) Show service DNS
-nslookup web-svc
-
+1) Show service DNS
+```
+nslookup web-svc.statefulset-lab.svc.cluster.local
+```
 # 2) Show pod-level DNS
-nslookup web-0.web-svc
-nslookup web-1.web-svc
-nslookup web-2.web-svc
+nslookup web-0.web-svc.statefulset-lab.svc.cluster.local
+nslookup web-1.web-svc.statefulset-lab.svc.cluster.local
+nslookup web-2.web-svc.statefulset-lab.svc.cluster.local
 
 # 3) Curl each pod
 ```
 wget -qO- web-0.web-svc
+```
+<h1>Hello from web-0</h1>
+```
 wget -qO- web-1.web-svc
+```
+<h1>Hello from web-1</h1>
+```
 wget -qO- web-2.web-svc
 ```
-Response should be like below
-
+<h1>Hello from web-2</h1>
+```
+wget -qO- web-0.web-svc.statefulset-lab.svc.cluster.local
+```
 <h1>Hello from web-0</h1>
+```
+wget -qO- web-1.web-svc.statefulset-lab.svc.cluster.local
+```
 <h1>Hello from web-1</h1>
+```
+wget -qO- web-2.web-svc.statefulset-lab.svc.cluster.local
+```
 <h1>Hello from web-2</h1>
