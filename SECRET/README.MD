@@ -16,16 +16,21 @@ kubectl create secret docker-registry docker-secret --docker-email=example@gmail
 ```
 
 #### TLS Secret
-```
+
 Create data folder
+```
 mkdir data
-Type following command which will give you a sample.crt and sample.pem file.
+```
+#Type following command which will give you a sample.crt and samplekey.pem file#
+```
 openssl req -x509 -nodes -newkey rsa:2048 \
-  -keyout sample.pem \
+  -keyout samplekey.pem \
   -out sample.crt \
   -subj "/CN=example.com" \
   -days 365
-kubectl create secret tls my-tls-secret --cert=/root/data/sample.crt --key=/root/data/samplekey.pem
+```
+```
+kubectl create secret tls my-tls-secret --cert=sample.crt --key=samplekey.pem
 ```
 
 ### To apply yaml files
