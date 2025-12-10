@@ -1,4 +1,4 @@
-#Run this once at the beginning of the session:
+# Run this once at the beginning of the session
 
 ```
 kubectl get nodes
