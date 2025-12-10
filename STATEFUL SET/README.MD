@@ -66,6 +66,7 @@ nslookup web-2.web-svc.statefulset-lab.svc.cluster.local
 wget -qO- web-0.web-svc
 ```
 <h1>Hello from web-0</h1>
+
 ```
 wget -qO- web-1.web-svc
 ```
