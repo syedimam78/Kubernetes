@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  serviceName: "web-svc"      # must match the headless service name
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+              name: http
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "<h1>Hello from $(hostname)</h1>" > /usr/share/nginx/html/index.html;
+              nginx -g 'daemon off;'
