@@ -1,10 +1,11 @@
-Run this once at the beginning of the session:
+#Run this once at the beginning of the session:
 
+```
 kubectl get nodes
 kubectl create namespace statefulset-lab
 kubectl config set-context --current --namespace=statefulset-lab
 kubectl get ns
-
+```
 vi ss-lab1-basic.yaml
 
 kubectl apply -f ss-lab1-basic.yaml
