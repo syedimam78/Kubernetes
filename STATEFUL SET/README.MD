@@ -1,4 +1,4 @@
-# Run this once at the beginning of the session
+# Lab 01 Stateful Set, Run this once at the beginning of the session
 
 ```
 kubectl get nodes
@@ -31,3 +31,6 @@ kubectl delete pod web-1
 kubectl delete -f ss-lab1-basic.yaml
 kubectl get pods -w
 ```
+
+# LAB 2 – Adding a Headless Service (Stable DNS per Pod)
+
