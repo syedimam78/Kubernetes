@@ -70,19 +70,19 @@ wget -qO- web-0.web-svc
 ```
 wget -qO- web-1.web-svc
 ```
-<h1>Hello from web-1</h1>
+ <h1>Hello from web-1</h1>
 ```
 wget -qO- web-2.web-svc
 ```
-<h1>Hello from web-2</h1>
+ <h1>Hello from web-2</h1>
 ```
 wget -qO- web-0.web-svc.statefulset-lab.svc.cluster.local
 ```
-<h1>Hello from web-0</h1>
+ <h1>Hello from web-0</h1>
 ```
 wget -qO- web-1.web-svc.statefulset-lab.svc.cluster.local
 ```
-<h1>Hello from web-1</h1>
+ <h1>Hello from web-1</h1>
 ```
 wget -qO- web-2.web-svc.statefulset-lab.svc.cluster.local
 ```
